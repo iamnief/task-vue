@@ -2,7 +2,8 @@
   <div id="app">
     <div id="nav">
       <router-link to="/">Books</router-link> |
-      <router-link to="/about">About</router-link>
+      <router-link to="/users">Users</router-link> |
+      <router-link to="/calculator">Calculator</router-link>
     </div>
     <router-view />
   </div>
@@ -11,7 +12,7 @@
 <script>
 import "bootstrap/dist/css/bootstrap.css"
 export default {
-  name: "App"
+  // name: "App"
 }
 </script>
 

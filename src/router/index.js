@@ -8,10 +8,16 @@ const routes = [
     component: Books,
   },
   {
-    path: "/about",
-    name: "About",
+    path: "/users",
+    name: "Users",
     component: () =>
-      import(/* webpackChunkName: "about" */ "../views/About.vue"),
+      import(/* webpackChunkName: "users" */ "../views/Users.vue"),
+  },
+  {
+    path: "/calculator",
+    name: "Calculator",
+    component: () =>
+      import(/* webpackChunkName: "calculator" */ "../views/Calculator.vue"),
   },
 ];
 
