@@ -2,7 +2,7 @@
   <div class="container">
     <h4 class="row text-left mb-3">Users</h4>
     <div class="row text-left mb-2">
-      <div class="col-4 input-group mb-3">
+      <div class="col-3 input-group mb-3">
         <div class="input-group-prepend">
           <label class="input-group-text" for="sortby">Sort by</label>
         </div>
@@ -18,19 +18,31 @@
         </select>
       </div>
       <button class="mybutton mybtn-1 col-1" @click="sortUsers">Sort</button>
-      <div class="col-2"></div>
-      <div class="col-4 input-group mb-3">
+      <div class="col-3"></div>
+      <div class="col-3 input-group mb-3">
         <div class="input-group-prepend">
           <label class="input-group-text" for="showrows">Show</label>
         </div>
-        <select class="custom-select" id="showrows" v-model="nRows">
-          <option :value="users.length" selected>all rows</option>
-          <option value="3">3 rows</option>
-          <option value="5">5 rows</option>
-          <option value="10">10 rows</option>
+        <select class="custom-select" id="showrows" v-model="showing">
+          <option selected :value="{rows: users.length, pages: 1, start: 0}">all rows</option>
+          <option :value="{rows: 3, pages: Math.ceil(users.length/3), start: 0}">3 rows</option>
+          <option :value="{rows: 5, pages: Math.ceil(users.length/5), start: 0}">5 rows</option>
+          <option :value="{rows: 10, pages: Math.ceil(users.length/10), start: 0}">10 rows</option>
         </select>
       </div>
-      <button class="mybutton mybtn-1 col-1" @click="showRows">Show</button>
+      <!-- <button class="mybutton mybtn-1 col-1" @click="showRows">Show</button> -->
+      <div class="col-2 input-group mb-3">
+        <div class="input-group-prepend">
+          <label class="input-group-text" for="page">Page</label>
+        </div>
+        <select class="custom-select" id="page" v-model="showing">
+          <option
+            v-for="i in showing.pages"
+            :key="i"
+            :value="{rows: showing.rows,  pages: showing.pages, start: (i-1)*showing.rows}"
+          >{{i}}</option>
+        </select>
+      </div>
     </div>
     <div v-if="responseError" class="row text-center">
       <h4>Sorry, we failed to reach the data</h4>
@@ -46,11 +58,11 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="user in showed" :key="user.id">
-            <th>{{user.id}}</th>
-            <td>{{user.email}}</td>
-            <td>{{user.first_name}}</td>
-            <td>{{user.last_name}}</td>
+          <tr v-for="i in showing.rows" :key="i">
+            <th v-if="i-1+showing.start<users.length">{{users[i-1+showing.start].id}}</th>
+            <td v-if="i-1+showing.start<users.length">{{users[i-1+showing.start].email}}</td>
+            <td v-if="i-1+showing.start<users.length">{{users[i-1+showing.start].first_name}}</td>
+            <td v-if="i-1+showing.start<users.length">{{users[i-1+showing.start].last_name}}</td>
           </tr>
         </tbody>
       </table>
@@ -69,11 +81,9 @@ export default {
     return {
       responseError: false,
       responseLoading: true,
-      nRows: null,
+      showing: { rows: null, pages: 1, start: 0 },
       sortChoice: 1,
-      pages: 1,
       users: [],
-      showed: [],
     };
   },
   mounted() {
@@ -81,7 +91,7 @@ export default {
       .then((response) => {
         this.responseLoading = true;
         this.users = this.users.concat(response.data.data);
-        // this.nRows = this.users.length;
+        this.showing.rows = this.users.length;
         // console.log(response.data.data);
       })
       .catch((error) => {
@@ -96,7 +106,7 @@ export default {
       .then((response) => {
         this.responseLoading = true;
         this.users = this.users.concat(response.data.data);
-        this.nRows = this.users.length;
+        this.showing.rows = this.users.length;
         // console.log(response.data.data);
       })
       .catch((error) => {
@@ -105,33 +115,33 @@ export default {
       })
       .finally(() => {
         this.responseLoading = false;
-        this.sortUsers()
+        this.sortUsers();
       });
   },
   methods: {
     showRows() {
-      if (this.nRows == this.users.length) this.pages = 1;
-      else this.pages = Math.ceil(this.users.length / this.nRows);
-      console.log(this.pages);
+      if (this.showing == this.users.length) this.pages = 1;
+      else this.pages = Math.ceil(this.users.length / this.showing);
+      // console.log(this.pages);
     },
     sortUsers() {
       // console.log("run");
       if (this.sortChoice != null) {
         // console.log("run 2");
         switch (this.sortChoice) {
-          case "1": {
+          case "1":
             this.users.sort((a, b) => {
               return a.id - b.id;
             });
             console.log(this.sortChoice == 1);
             break;
-          }
-          case "2": {
+
+          case "2":
             this.users.sort((a, b) => {
               return b.id - a.id;
             });
             break;
-          }
+
           case "3":
             this.users.sort((a, b) => {
               if (a.first_name < b.first_name) return -1;
