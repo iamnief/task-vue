@@ -3,7 +3,7 @@
     <h4>Book Input</h4>
   </div>
   <div class="row form-group">
-    <input class="form-control book-form" id placeholder="Book Title" v-model="newTitle" />
+    <input class="form-control book-form" placeholder="Book Title" v-model="newTitle" />
     <input class="form-control book-form" placeholder="Book Writer" v-model="newWriter" />
     <button class="mybutton mybtn-1" id="add-book-btn" @click="addBook">Add Book</button>
   </div>
